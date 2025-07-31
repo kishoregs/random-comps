@@ -10,46 +10,40 @@ This guide shows how to integrate Cipher as an MCP server with Cascade, allowing
 
 ## System Architecture
 
-```mermaid
-graph TB
-    subgraph "User Environment"
-        U["👤 User"] --> C["🌊 Cascade (Windsurf)"]
-    end
-    
-    subgraph "MCP Integration Layer"
-        C --> MCP["📡 MCP Protocol"]
-        MCP --> CS["🧠 Cipher MCP Server"]
-    end
-    
-    subgraph "Cipher Internal Components"
-        CS --> CM["💾 Cipher Memory Agent"]
-        CM --> OL["🦙 Ollama (llama3.2:1b)"]
-        CM --> QD["🗄️ Qdrant Vector DB"]
-        CM --> KG["🕸️ Knowledge Graph"]
-    end
-    
-    subgraph "Local Services (Docker/Brew)"
-        QD --> QC["🐳 Qdrant Container<br/>Port 6333"]
-        OL --> OS["🍺 Ollama Service<br/>Port 11434"]
-    end
-    
-    subgraph "Data Flow"
-        U -.->|"1. User Query"| C
-        C -.->|"2. MCP Tool Call"| CS
-        CS -.->|"3. Memory Search/Store"| CM
-        CM -.->|"4. Vector Operations"| QD
-        CM -.->|"5. LLM Processing"| OL
-        CM -.->|"6. Knowledge Relations"| KG
-        CS -.->|"7. Response"| C
-        C -.->|"8. Enhanced Answer"| U
-    end
-    
-    style C fill:#4A90E2,color:#fff
-    style CS fill:#7ED321,color:#fff
-    style CM fill:#F5A623,color:#fff
-    style QD fill:#D0021B,color:#fff
-    style OL fill:#9013FE,color:#fff
-    style KG fill:#50E3C2,color:#fff
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           🌊 Cascade (Windsurf)                            │
+│                         Primary AI Interface                               │
+└─────────────────────────┬───────────────────────────────────────────────────┘
+                          │ 📡 MCP Protocol
+                          ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        🧠 Cipher MCP Server                                │
+│                    Provides Memory Tools                                   │
+└─────────────────────────┬───────────────────────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      💾 Cipher Memory Agent                                │
+│                     Core Memory Logic                                      │
+└──────────┬──────────────┬──────────────┬─────────────────────────────────────┘
+           │              │              │
+           ▼              ▼              ▼
+  ┌───────────────┐ ┌─────────────┐ ┌──────────────────┐
+  │🦙 Ollama      │ │🗄️ Qdrant    │ │🕸️ Knowledge      │
+  │llama3.2:1b    │ │Vector DB    │ │Graph             │
+  │Port 11434     │ │Port 6333    │ │Relationships     │
+  └───────────────┘ └─────────────┘ └──────────────────┘
+
+📊 Data Flow:
+1. 👤 User Query → 🌊 Cascade
+2. 🌊 Cascade → 📡 MCP Tool Call → 🧠 Cipher MCP Server
+3. 🧠 Cipher → 💾 Memory Agent (Search/Store)
+4. 💾 Memory Agent → 🗄️ Qdrant (Vector Operations)
+5. 💾 Memory Agent → 🦙 Ollama (LLM Processing)
+6. 💾 Memory Agent → 🕸️ Knowledge Graph (Relations)
+7. 🧠 Cipher → 📡 Response → 🌊 Cascade
+8. 🌊 Cascade → 👤 Enhanced Answer
 ```
 
 ### Component Roles
